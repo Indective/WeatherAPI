@@ -28,5 +28,5 @@ def makerequest(city):
     print(json.dumps(result))
 
 if __name__ == "__main__":
-    city = sys.argv[2]
+    city = sys.argv[1]
     makerequest(city)
