@@ -10,11 +10,14 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
 
-# Include directories
-include_directories(${CMAKE_SOURCE_DIR}/include)
-add_subdirectory(external/nlohmann) 
-
+include_directories(
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/external/json/include
+)
 # Add the executable
 file(GLOB_RECURSE SOURCES ${SOURCE_DIR}/*.cpp)
 add_executable(${PROJECT_NAME} ${SOURCES})
-target_link_libraries(weather PRIVATE nlohmann_json::nlohmann_json)
+
+if(UNIX AND NOT APPLE)
+    target_link_libraries(${PROJECT_NAME} m pthread dl rt X11)
+endif()
