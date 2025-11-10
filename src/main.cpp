@@ -5,8 +5,6 @@
 #include <map>
 #include <filesystem>
 
-#define MAX_INPUT_CHARS     9
-
 namespace fs =  std::filesystem;
 
 int main()
