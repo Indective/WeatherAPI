@@ -9,24 +9,25 @@ namespace fs =  std::filesystem;
 
 int main()
 {
-    const int screen_width = 900;
-    const int screen_height = 1500;
+    const int screen_width = 1500;
+    const int screen_height = 900;
 
     fs::current_path(fs::current_path().parent_path().string());
     fs::current_path(fs::current_path().string() + "/src");
     std::map<std::string,std::string> weather;
 
-    Rectangle text_box = {50, 50, 250, 40};
+    Rectangle text_box = {60, 60, 250, 40};
 
     bool focused = false;
     bool searched = false;
-    int line_counter = 0; // count lines when displaying results
-    char* result = "no city searched yet"; // last result fetched (city name)
+    const char* result = "no city searched yet"; // last result fetched 
     std::string text = ""; // text string to be displayed on screen based on what the user types
     
+    SetTargetFPS(60);
+    InitWindow(screen_width,screen_height,"Weather API");
+
     while(true)
     {
-        searched = false;
         if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
         {
             Vector2 mouse_position = GetMousePosition();
@@ -41,6 +42,8 @@ int main()
                 {
                     text.push_back((char)key); // convert uncicode value to char and it to text string
                 }
+
+                key = GetCharPressed();
             }
 
             if (IsKeyPressed(KEY_BACKSPACE) && !text.empty())  // remove last character when pressing backspace
@@ -50,13 +53,16 @@ int main()
 
             if(IsKeyPressed(KEY_ENTER)) // start searching if the user pressed ENTER
             {
-                result = "Fetching for city : ", text.c_str();
-                weather = weather::parse_python_data(text);
-                
-                focused = false;
-                searched = true;
+                if(!(text == ""))
+                {
+                    const char* temp = text.c_str();
+                    result = "Fetching for city : ", temp;
+                    weather = weather::parse_python_data(text);
+                    
+                    focused = false;
+                    searched = true;
+                }
             }
-
         }
 
 
@@ -64,7 +70,7 @@ int main()
         BeginDrawing();
         ClearBackground(WHITE);
 
-        DrawText("Weather ass API",10,10,40,BLACK);
+        DrawText("Weather API",10,10,40,BLACK);
 
         DrawRectangleRec(text_box, RAYWHITE); // draw text box
         DrawRectangleLinesEx(text_box, 2, focused ? BLUE : DARKGRAY);
@@ -80,12 +86,14 @@ int main()
 
         if(searched)
         {
-            DrawText(result,75,75,10,BLACK);
+            int line_counter = 0; // count lines when displaying results
+            DrawText(result,60,130,20,BLACK);
             for(auto& howismyweather : weather)
             {
-                DrawText(howismyweather.first.c_str(),75,80 + line_counter,5,BLACK);
-                DrawText(howismyweather.second.c_str(),80,80 + line_counter,5,BLACK);
-                line_counter ++;
+                std::cout << howismyweather.first << " " << howismyweather.second << std::endl;
+                DrawText(howismyweather.first.c_str(),60,150 + line_counter,20,BLACK);
+                DrawText(howismyweather.second.c_str(),60 + 200,150 + line_counter,20,BLACK);
+                line_counter += 50;
             }
         }
 
