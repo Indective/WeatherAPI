@@ -31,23 +31,27 @@ std::map<std::string, std::string> weather::parse_python_data(const std::string 
     auto w = j["weather"];
 
     std::map<std::string, std::string> weather = {
-        {"IsDay", std::to_string(w["is_day"].get<int>())},
-        {"temperature", std::to_string(w["temperature"].get<double>())},
-        {"windspeed", std::to_string(w["windspeed"].get<double>())},
-        {"winddirection", std::to_string(w["winddirection"].get<int>())}
+        {"Fetching for city : ", city_name},
+        {"temperature (°C) : ", std::to_string(w["temperature_2m"].get<int>())},
+        {"windspeed (km/h) : ", std::to_string(w["wind_speed_10m"].get<int>())},
+        {"winddirection (°) : ", std::to_string(w["wind_direction_10m"].get<int>())},
+        {"rain (mm) : ", std::to_string(w["rain"].get<int>())},
+        {"relative humidity (%) : ", std::to_string(w["relative_humidity_2m"].get<int>())},
+        {"visibility (m) : ", std::to_string(w["visibility"].get<int>())},
+        {"interval (seconds) : ", std::to_string(w["interval"].get<int>())}
     };
 
     return weather;
 }
 
-void weather::display_weather_info(std::string text, bool &searched, std::map<std::string,std::string> &weather)
+void weather::display_weather_info(std::string text, bool &searched, std::map<std::string,std::string> &weather, const int screen_width, const int screen_height)
 {
-    std::string searched_city;
+    const int posx = screen_width/2-  200; // X position for items to be displayed 
+    const int posy = screen_height/2 * 0.30;
     if(IsKeyPressed(KEY_ENTER)) // start searching if the user pressed ENTER
     {
         if(!(text == ""))
         {
-            searched_city = text;
             weather = weather::parse_python_data(text);
             searched = true;
         }
@@ -55,13 +59,11 @@ void weather::display_weather_info(std::string text, bool &searched, std::map<st
 
     if(searched)
     {   
-        std::cout << searched_city << std::endl;
         int line_counter = 0; // count lines when displaying results
-        DrawText(searched_city.c_str(),60,130,20,BLACK);
         for(auto& howismyweather : weather)
         {
-            DrawText(howismyweather.first.c_str(),60,170 + line_counter,20,BLACK);
-            DrawText(howismyweather.second.c_str(),60 + 200,170 + line_counter,20,BLACK);\
+            DrawText(howismyweather.first.c_str(),posx,posy + line_counter,20,BLACK);
+            DrawText(howismyweather.second.c_str(),posx + 300,posy + line_counter,20,BLACK);\
 
             line_counter += 50; // advance 50 pixels now for better visualization
 

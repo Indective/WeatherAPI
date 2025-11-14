@@ -15,14 +15,16 @@ def makerequest(city):
 
     weather_url = (
         f"https://api.open-meteo.com/v1/forecast?"
-        f"latitude={lat}&longitude={lon}&current_weather=true"
+        f"latitude={lat}&longitude={lon}"
+        f"&current=temperature_2m,relative_humidity_2m,precipitation,rain,pressure_msl,wind_speed_10m,"
+        f"wind_direction_10m,cloud_cover,visibility,weather_code"
     )
 
     weather_data = requests.get(weather_url).json()
 
     result = {
         "city": city,
-        "weather": weather_data["current_weather"]
+        "weather": weather_data["current"]
     }
 
     print(json.dumps(result))

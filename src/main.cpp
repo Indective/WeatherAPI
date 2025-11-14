@@ -17,7 +17,7 @@ int main()
     fs::current_path(fs::current_path().string() + "/src");
 
     std::string text;
-    Rectangle text_box = {60, 60, 250, 40};
+    Rectangle text_box = {screen_width/2 - 150, 80, 250, 40};
 
     bool searched = false;
     SetTargetFPS(60);
@@ -35,9 +35,9 @@ int main()
 
         // Begin drawing
         BeginDrawing();
-        ClearBackground(WHITE);
+        ClearBackground((Color){220, 230, 255, 255});
 
-        DrawText("Weather API",10,10,40,BLACK);
+        DrawText("Weather API",screen_width/2 - 150,10,40,BLACK);
 
         DrawRectangleRec(text_box, RAYWHITE); // draw text box
         DrawRectangleLinesEx(text_box, 2, BLUE);
@@ -51,7 +51,7 @@ int main()
             DrawLine(text_box.x + 8 + tw + 2, text_box.y + 8, text_box.x + 8 + tw + 2, text_box.y + 32, BLACK);
         }
 
-        weather::display_weather_info(text, searched, weather);
+        weather::display_weather_info(text, searched, weather, screen_width, screen_height);
 
         EndDrawing();
     }
