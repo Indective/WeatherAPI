@@ -1,5 +1,6 @@
 #include <nlohmann/json.hpp>
 #include "weather.hpp"
+#include "raylib.h"
 #include <iostream>
 #include <string>
 
@@ -39,4 +40,52 @@ std::map<std::string, std::string> weather::parse_python_data(const std::string 
     return weather;
 }
 
+void weather::display_weather_info(std::string text, bool &searched, std::map<std::string,std::string> &weather)
+{
+    std::string searched_city;
+    if(IsKeyPressed(KEY_ENTER)) // start searching if the user pressed ENTER
+    {
+        if(!(text == ""))
+        {
+            searched_city = text;
+            weather = weather::parse_python_data(text);
+            searched = true;
+        }
+    } 
 
+    if(searched)
+    {   
+        std::cout << searched_city << std::endl;
+        int line_counter = 0; // count lines when displaying results
+        DrawText(searched_city.c_str(),60,130,20,BLACK);
+        for(auto& howismyweather : weather)
+        {
+            DrawText(howismyweather.first.c_str(),60,170 + line_counter,20,BLACK);
+            DrawText(howismyweather.second.c_str(),60 + 200,170 + line_counter,20,BLACK);\
+
+            line_counter += 50; // advance 50 pixels now for better visualization
+
+        }
+    }
+}
+
+std::string weather::user_text(std::string text)
+{
+    int key = GetCharPressed(); // get key pressed in char (unicode)
+    while(key > 0)
+    {
+        if(key >= 32 && key <= 125) // check if unicode value is within range of valid chars
+        {
+            text.push_back((char)key); // convert uncicode value to char and it to text string
+        }
+
+        key = GetCharPressed();
+    }
+
+    if (IsKeyPressed(KEY_BACKSPACE) && !text.empty())  // remove last character when pressing backspace
+    {
+        text.pop_back();
+    }
+
+    return text;
+}
