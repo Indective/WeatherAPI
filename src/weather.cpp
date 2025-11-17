@@ -38,6 +38,7 @@ std::map<std::string, std::string> weather::parse_python_data(const std::string 
         {"rain (mm) : ", std::to_string(w["rain"].get<int>())},
         {"relative humidity (%) : ", std::to_string(w["relative_humidity_2m"].get<int>())},
         {"visibility (m) : ", std::to_string(w["visibility"].get<int>())},
+        {"weather code (0-100) : ", std::to_string(w["weather_code"].get<int>())},
         {"interval (seconds) : ", std::to_string(w["interval"].get<int>())}
     };
 
@@ -46,8 +47,10 @@ std::map<std::string, std::string> weather::parse_python_data(const std::string 
 
 void weather::display_weather_info(std::string text, bool &searched, std::map<std::string,std::string> &weather, const int screen_width, const int screen_height)
 {
-    const int posx = screen_width/2-  200; // X position for items to be displayed 
+    const int posx = screen_width/2 - 200; // X position for items to be displayed 
     const int posy = screen_height/2 * 0.30;
+    const int sepration = 300;
+
     if(IsKeyPressed(KEY_ENTER)) // start searching if the user pressed ENTER
     {
         if(!(text == ""))
@@ -62,11 +65,43 @@ void weather::display_weather_info(std::string text, bool &searched, std::map<st
         int line_counter = 0; // count lines when displaying results
         for(auto& howismyweather : weather)
         {
-            DrawText(howismyweather.first.c_str(),posx,posy + line_counter,20,BLACK);
-            DrawText(howismyweather.second.c_str(),posx + 300,posy + line_counter,20,BLACK);\
+            if (howismyweather.first == "weather code (0-100) : ")
+            {
+                int weathercode = std::stoi(howismyweather.second);
+                Texture2D tex;
+                float scale = 0.08  ; // for scaling the texture
+                if(weathercode <= 3)
+                {
+                    tex = LoadTexture("../resources/clear_sky.png");
+                }
+                else if(weathercode < 51)
+                {
+                    tex = LoadTexture("../resources/fog.png");
+                }
+                else if(weathercode <= 77)
+                {
+                    tex = LoadTexture("../resources/rainy.png");
+                }
+                else
+                {
+                    tex = LoadTexture("../resources/thunderstorm.png");
+                }
 
-            line_counter += 50; // advance 50 pixels now for better visualization
+                DrawText(howismyweather.first.c_str(),posx,posy + line_counter,20,BLACK);
+                DrawText(howismyweather.second.c_str(),posx + sepration,posy + line_counter,20,BLACK); 
+                DrawTextureEx(tex,{(float)posx + sepration + 50 , (float)posy + line_counter - 10},0.0f,scale,WHITE);
+                std::cout << "drawing" << std::endl;
 
+                line_counter += 50;
+            }
+            
+            else
+            {
+                DrawText(howismyweather.first.c_str(),posx,posy + line_counter,20,BLACK);
+                DrawText(howismyweather.second.c_str(),posx + 300,posy + line_counter,20,BLACK);
+    
+                line_counter += 50; // advance 50 pixels now for better visualization
+            }
         }
     }
 }
